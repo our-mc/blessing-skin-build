@@ -1,0 +1,84 @@
+name: Build blessing-skin-server
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+  pull_request:
+    branches:
+      - master
+      - dev
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to build'
+        required: true
+        default: 'master'
+        type: choice
+        options:
+          - master
+          - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        include:
+          - branch: master
+            php-version: '8.1'
+          - branch: dev
+            php-version: '8.2'
+      fail-fast: false
+
+    steps:
+      - name: Checkout blessing-skin-server
+        uses: actions/checkout@v4
+        with:
+          repository: 'our-mc/blessing-skin-server'
+          ref: ${{ matrix.branch }}
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          tools: composer
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Copy .env file
+        run: cp .env.example .env
+
+      - name: Generate application key
+        run: php artisan key:generate
+
+      - name: Install Yarn dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build with PowerShell Core
+        run: |
+          pwsh ./tools/build.ps1
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: blessing-skin-build-${{ matrix.branch }}
+          path: |
+            public/
+            resources/
+            storage/
+            .env
+            artisan
+            composer.json
+            composer.lock
+            package.json
+            yarn.lock
