@@ -1,0 +1,29 @@
+FROM php:8.1-fpm
+
+
+# 安装 PHP 扩展安装器
+ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+
+# 安装 Nginx 和 Supervisor 和 php 扩展
+RUN apt-get update && \
+    apt-get install -y nginx supervisor && \
+    rm -rf /var/lib/apt/lists/* && \
+    install-php-extensions pdo_mysql gd zip
+
+# 复制 nginx 配置
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# 复制 Supervisor 配置
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# 清理nginx目录
+RUN rm -rf /var/www/html/*
+
+COPY src /var/www/html/
+
+# 设置权限（可选）
+RUN chown -R www-data:www-data /var/www/html
+
+
+# Let supervisord start nginx & php-fpm
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
