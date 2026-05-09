@@ -73,12 +73,9 @@ jobs:
         with:
           name: blessing-skin-build-${{ matrix.branch }}
           path: |
-            public/
-            resources/
-            storage/
-            .env
-            artisan
-            composer.json
-            composer.lock
-            package.json
-            yarn.lock
+            **
+            !.git/**
+            !node_modules/**
+            !.github/**
+            !.gitignore
+            !.gitattributes
