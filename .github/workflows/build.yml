@@ -72,10 +72,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: blessing-skin-build-${{ matrix.branch }}
+          include-dotfiles: true
           path: |
             **
             !.git/**
             !node_modules/**
             !.github/**
-            !.gitignore
-            !.gitattributes
