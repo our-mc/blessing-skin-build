@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       branch:
-        description: 'Branch to build Docker image for'
+        description: 'Branch to build'
         required: true
         default: 'master'
         type: choice
@@ -13,9 +13,59 @@ on:
           - dev
 
 jobs:
-  build-docker:
+  build:
     runs-on: ubuntu-latest
-    
+
+    steps:
+      - name: Checkout blessing-skin-server
+        uses: actions/checkout@v4
+        with:
+          repository: 'our-mc/blessing-skin-server'
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ github.event.inputs.branch == 'master' && '8.1' || '8.2' }}
+          tools: composer
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Copy .env file
+        run: cp .env.example .env
+
+      - name: Generate application key
+        run: php artisan key:generate
+
+      - name: Install Yarn dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build with PowerShell Core
+        run: |
+          pwsh ./tools/build.ps1
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: blessing-skin-build
+          include-hidden-files: true
+          path: |
+            **
+            !.git/**
+            !node_modules/**
+            !.github/**
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: build
+
     steps:
       - name: Checkout build repository
         uses: actions/checkout@v4
@@ -23,7 +73,7 @@ jobs:
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
-          name: blessing-skin-build-${{ github.event.inputs.branch }}
+          name: blessing-skin-build
           path: ./${{ github.event.inputs.branch }}/src
 
       - name: Set up Docker Buildx
