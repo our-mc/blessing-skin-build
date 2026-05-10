@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# --- 创建 PHP-FPM socket 目录 ---
+mkdir -p /path/to/unix && chown www-data:www-data /path/to/unix
+
 # --- 处理 env 文件夹 ---
 # 检查 /var/www/html/env 目录下是否有 .env 文件
 if [ ! -f /var/www/html/env/.env ]; then

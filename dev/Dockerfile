@@ -49,7 +49,7 @@ RUN chmod +x /entrypoint.sh
 
 RUN chown -R www-data:www-data /var/www/html
 
-RUN mkdir -p /path/to && chown -R www-data:www-data /path/to
+RUN mkdir -p /path/to/unix && chown -R www-data:www-data /path/to/unix
 
 ENTRYPOINT ["/entrypoint.sh"]
 
