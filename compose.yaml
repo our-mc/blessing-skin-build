@@ -9,6 +9,9 @@ services:
       - ./data/skin/plugins:/var/www/html/plugins
       - ./data/skin/env:/var/www/html/env
       - ./data/skin/storage:/var/www/html/storage
+
+      # 资源挂载
+      - ./data/skin/public/storage:/var/www/html/public/storage
   db:
     container_name: our-mc-skin-db
     image: mariadb:latest
