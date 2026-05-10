@@ -49,6 +49,8 @@ RUN chmod +x /entrypoint.sh
 
 RUN chown -R www-data:www-data /var/www/html
 
+RUN mkdir -p /path/to && chown -R www-data:www-data /path/to
+
 ENTRYPOINT ["/entrypoint.sh"]
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
