@@ -30,7 +30,7 @@ RUN apt-get update && \
 COPY nginx.conf /etc/nginx/nginx.conf
 
 # 复制php配置
-COPY www.conf /usr/local/etc/php-fpm.d/www.conf
+COPY www.conf /usr/local/etc/php-fpm.d/zz-docker.conf
 
 COPY php.ini /usr/local/etc/php/php.ini
 
