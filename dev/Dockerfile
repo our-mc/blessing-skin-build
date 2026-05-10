@@ -29,6 +29,11 @@ RUN apt-get update && \
 # 复制 nginx 配置
 COPY nginx.conf /etc/nginx/nginx.conf
 
+# 复制php配置
+COPY www.conf /usr/local/etc/php-fpm.d/www.conf
+
+COPY php.ini /usr/local/etc/php/php.ini
+
 # 复制 Supervisor 配置
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
