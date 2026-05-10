@@ -53,4 +53,4 @@ docker-compose -f compose.yaml up -d
 
 ## License
 
-MIT License
+Apache License 2.0
