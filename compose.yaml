@@ -1,0 +1,23 @@
+services:
+  blessing-skin:
+    container_name: our-mc-skin
+    image: ghcr.io/our-mc/blessing-skin-build:master
+    # image: ghcr.io/our-mc/blessing-skin-build:dev
+    ports:
+      - 8079:80
+    volumes:
+      - ./data/skin/plugins:/var/www/html/plugins
+      - ./data/skin/env:/var/www/html/env
+      - ./data/skin/storage:/var/www/html/storage
+  db:
+    container_name: our-mc-skin-db
+    image: mariadb:latest
+    volumes:
+      - ./data/db:/var/lib/mysql:Z
+    environment:
+      - MARIADB_USER=blessingskin
+      - MARIADB_PASSWORD=yourpassword
+      - MARIADB_DATABASE=blessingskin
+      - MARIADB_ROOT_PASSWORD=yourrootpassword
+    restart: unless-stopped
+networks: {}
