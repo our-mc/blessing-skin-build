@@ -1,3 +1,19 @@
+# 第一阶段：构建/整理阶段
+FROM alpine AS builder
+
+# 设置工作目录
+WORKDIR /app
+
+COPY src .
+
+COPY src/.env ./copy/.env
+COPY src/.env ./env/.env
+COPY src/storage ./copy/storage
+
+RUN rm -rf .env
+
+RUN ln -s env/.env .env
+
 FROM php:8.1-fpm
 
 
@@ -19,11 +35,15 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # 清理nginx目录
 RUN rm -rf /var/www/html/*
 
-COPY src /var/www/html/
+# COPY src /var/www/html/
 
-# 设置权限（可选）
+COPY --from=builder /app /var/www/html/
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 RUN chown -R www-data:www-data /var/www/html
 
+ENTRYPOINT ["/entrypoint.sh"]
 
-# Let supervisord start nginx & php-fpm
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
