@@ -8,7 +8,6 @@ COPY src .
 
 COPY src/.env ./copy/.env
 COPY src/storage ./copy/storage
-COPY src/public ./copy/public
 COPY src/plugins ./copy/plugins
 
 RUN rm -rf .env
@@ -17,14 +16,10 @@ RUN ln -s data/.env .env
 RUN rm -rf storage
 RUN ln -s data/storage storage
 
-RUN rm -rf public
-RUN ln -s data/public public
-
 RUN rm -rf plugins
 RUN ln -s data/plugins plugins
 
 FROM php:8.1-fpm
-
 
 # 安装 PHP 扩展安装器
 ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
