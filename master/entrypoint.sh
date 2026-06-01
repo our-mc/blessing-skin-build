@@ -12,10 +12,12 @@ BACKUP_DIR="/var/www/html/copy"
 if [ ! -d "$DATA_DIR" ] || [ -z "$(ls -A "$DATA_DIR" 2>/dev/null)" ]; then
     echo "检测到 data 文件夹为空或不存在，正在从备份恢复..."
     mkdir -p "$DATA_DIR"
-    cp -a "$BACKUP_DIR"/.* "$BACKUP_DIR"/* "$DATA_DIR"/ 2>/dev/null
+    
+    # 核心修正：使用 /. 来安全地复制所有文件（含隐藏文件）
+    cp -a "$BACKUP_DIR"/. "$DATA_DIR"/
+    
     echo "恢复完成！"
 fi
-
 
 
 # --- 权限修正 (可选但推荐) ---
