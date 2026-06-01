@@ -7,12 +7,21 @@ WORKDIR /app
 COPY src .
 
 COPY src/.env ./copy/.env
-COPY src/.env ./env/.env
 COPY src/storage ./copy/storage
+COPY src/public ./copy/public
+COPY src/plugins ./copy/plugins
 
 RUN rm -rf .env
+RUN ln -s data/.env .env
 
-RUN ln -s env/.env .env
+RUN rm -rf storage
+RUN ln -s data/storage storage
+
+RUN rm -rf public
+RUN ln -s data/public public
+
+RUN rm -rf plugins
+RUN ln -s data/plugins plugins
 
 FROM php:8.1-fpm
 
